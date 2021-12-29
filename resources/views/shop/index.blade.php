@@ -1,116 +1,94 @@
 @extends('layouts.shop.master')
 
 @section('content')
-<!-- Breadcrumb Section Begin -->
-<section class="breadcrumb-section set-bg" data-setbg="{{ asset('ogani/img/breadcrumb.jpg') }}">
+<!-- Banner Section Begin -->
+<section class="hero">
     <div class="container">
         <div class="row">
-            <div class="col-lg-12 text-center">
-                <div class="breadcrumb__text">
-                    <h2>Keranjang Belanja</h2>
-                    <div class="breadcrumb__option">
-                        <a href="#">Home</a>
-                        <span>Keranjang Belanja</span>
+            <div class="col-lg-12">
+                <div class="hero__item set-bg" data-setbg="{{ asset('ogani/img/hero/banner.jpg') }}">
+                    <div class="hero__text">
+                        <span>BUAH BUAHAN SEGAR</span>
+                        <h2>SAYURAN <br />100% Organik</h2>
+                        <p>Tersedia Pemesanan dan Pengiriman Gratis</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<!-- Breadcrumb Section End -->
+<!-- Banner Section End -->
 
-<!-- Shoping Cart Section Begin -->
-<section class="shoping-cart spad">
+<!-- Product Section Begin -->
+<section class="product spad pt-3">
     <div class="container">
-        <form action="{{ route('shoppingCarts.update') }}" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="shoping__cart__table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th class="shoping__product">Barang</th>
-                                    <th>Harga</th>
-                                    <th>Jumlah Beli</th>
-                                    <th>Total</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php
-                                    $total = 0;
-                                @endphp
-                                @foreach ($shoppingCarts as $cart)
-                                    @php
-                                        $total += $cart->goods->price * $cart->qty;
-                                    @endphp
-                                    <tr>
-                                        <td class="shoping__cart__item">
-                                            <img src="{{ asset('storage/' . $cart->goods->goodsImages[0]->src) }}" width="100px" height="100px">
-                                            <h5>
-                                                {{ $cart->goods->name }} <br>
-                                                <span style="font-size: 13px !important; color: grey; margin-top: 24px">{{ $cart->seller->name }}</span>
-                                            </h5>
-                                        </td>
-                                        <td class="shoping__cart__price">
-                                            {{ 'Rp ' . number_format($cart->goods->price, 0, ',', '.') }}
-                                        </td>
-                                        <td class="shoping__cart__quantity">
-                                            <div class="quantity">
-                                                <div class="pro-qty">
-                                                    <input type="text" value="{{ $cart->qty }}" name="qty[]">
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="shoping__cart__total">
-                                            {{ 'Rp ' . number_format($cart->goods->price * $cart->qty, 0, ',', '.') }}
-                                        </td>
-                                        <td class="shoping__cart__item__close">
-                                            <a href="{{ route('shoppingCarts.destroy', $cart->id) }}"><span class="icon_trash"></span></a>
-                                        </td>
-                                    </tr>
-                                    <input type="hidden" name="goods_id[]" value="{{ $cart->id }}">
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="shoping__cart__btns">
-                        <a href="{{ route('shop.index') }}" class="primary-btn cart-btn">Lanjutkan Belanja</a>
-                        <button type="submit" class="primary-btn cart-btn cart-btn-right" style="border: none !important">
-                            <span class="icon_loading"></span>
-                            Update Keranjang Belanja
-                        </button>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    {{-- <div class="shoping__continue">
-                        <div class="shoping__discount">
-                            <h5>Discount Codes</h5>
-                            <form action="#">
-                                <input type="text" placeholder="Enter your coupon code">
-                                <button type="submit" class="site-btn">APPLY COUPON</button>
-                            </form>
-                        </div>
-                    </div> --}}
-                </div>
-                <div class="col-lg-6">
-                    <div class="shoping__checkout">
-                        <h5>Total Keranjang Belanja</h5>
+        <div class="row">
+            <div class="col-lg-3 col-md-5">
+                <div class="sidebar">
+                    <div class="sidebar__item">
+                        <h4>Kategori</h4>
                         <ul>
-                            <li>Total <span>{{ 'Rp ' . number_format($total, 0, ',', '.') }}</span></li>
+                            <li><a href="{{ route('shop.filterCategory', 'sayur segar') }}" class="{{ Request::segment(2) === 'sayur segar' ? 'text-primary font-weight-bold' : '' }}">Sayuran Segar</a></li>
+                            <li><a href="{{ route('shop.filterCategory', 'buah segar') }}" class="{{ Request::segment(2) === 'buah segar' ? 'text-primary font-weight-bold' : '' }}">Buah-Buahan</a></li>
+                            <li><a href="{{ route('shop.filterCategory', 'daging segar') }}" class="{{ Request::segment(2) === 'daging segar' ? 'text-primary font-weight-bold' : '' }}">Daging Segar</a></li>
+                            <li><a href="{{ route('shop.filterCategory', 'bumbu dapur') }}" class="{{ Request::segment(2) === 'bumbu dapur' ? 'text-primary font-weight-bold' : '' }}">Bumbu Dapur</a></li>
                         </ul>
-                        <a href="{{ route('transactions.create') }}" class="primary-btn">Proses ke Pembayaran</a>
+                    </div>
+                    <div class="sidebar__item">
+                        <div class="latest-product__text">
+                            <h4>Produk Terlaris</h4>
+                            <div class="latest-product__slider owl-carousel">
+                                @foreach ($best_sellers->split($best_sellers->count()/3) as $section)
+                                    <div class="latest-prdouct__slider__item">
+                                        @foreach ($section as $best_seller)
+                                            <a href="{{ route('shop.show', $best_seller->id) }}" class="latest-product__item">
+                                                <div class="latest-product__item__pic">
+                                                    <img src="{{ asset('storage/' . $best_seller->goodsImages[0]->src) }}" style="width: 110px !important; height: 110px !important">
+                                                </div>
+                                                <div class="latest-product__item__text">
+                                                    <h6>{{ $best_seller->name }}</h6>
+                                                    <p style="font-size: 13px">{{ $best_seller->user->name }}</p>
+                                                    <span>{{ 'Rp ' . number_format($best_seller->price, 0, ',', '.') }}</span>
+                                                </div>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </form>
+            <div class="col-lg-9 col-md-7">
+                <div class="section-title product__discount__title">
+                    <h2>{{ $title }}</h2>
+                </div>
+                <div class="row">
+                    @foreach ($goods as $item)
+                        <div class="col-lg-4 col-md-6 col-sm-6">
+                            <a href="{{ route('shop.show', $item->id) }}">
+                                <div class="product__item">
+                                    <div class="product__item__pic set-bg" data-setbg="{{ asset('storage/' . $item->goodsImages[0]->src) }}"></div>
+                                    <div class="product__discount__item__text">
+                                        <span>{{ $item->user->name }}</span>
+                                        <h5>{{ $item->name }}</h5>
+                                        <div class="product__item__price">{{ 'Rp ' . number_format($item->price, 0, ',', '.') }}</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="product__pagination">
+                    <a href="#">1</a>
+                    <a href="#">2</a>
+                    <a href="#">3</a>
+                    <a href="#"><i class="fa fa-long-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
-<!-- Shoping Cart Section End -->
+<!-- Product Section End -->
+
 @endsection
