@@ -15,18 +15,20 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var string[]
      */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
+        'device_name',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array<int, string>
+     * @var array
      */
     protected $hidden = [
         'password',
@@ -36,9 +38,69 @@ class User extends Authenticatable
     /**
      * The attributes that should be cast.
      *
-     * @var array<string, string>
+     * @var array
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Get the user_detail associated with the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function userDetail()
+    {
+        return $this->hasOne(UserDetail::class);
+    }
+
+    /**
+     * Get all of the goods for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function goods()
+    {
+        return $this->hasMany(Goods::class);
+    }
+
+    public function isAdmin()
+    {
+        if ($this->role == 'admin') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function isPenjual()
+    {
+        if ($this->role == 'penjual') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function isPembeli()
+    {
+        if ($this->role == 'pembeli') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function hasRole($role)
+    {
+        switch ($role) {
+            case 'admin':
+                return \Auth::user()->isAdmin();
+            case 'penjual':
+                return \Auth::user()->isPenjual();
+            case 'pembeli':
+                return \Auth::user()->isPembeli();
+        }
+        return false;
+    }
 }
