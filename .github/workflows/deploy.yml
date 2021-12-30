@@ -20,7 +20,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-    
+
       - name: "Build and push"
         run: |
           docker build -f Docker/dockerfile/app.Dockerfile -t app .
@@ -57,7 +57,7 @@ jobs:
             oci compute instance list \
             --lifecycle-state RUNNING \
             --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} \
-            --display-name ubuntu-vm \
+            --display-name viggy \
             --query "data [0].id" \
             --raw-output \
             )" >> $GITHUB_ENV
